@@ -1,0 +1,15 @@
+record(ao,"$(P)$(R)") {
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    #field(FLNK, "$(P)$(R)Return.PROC  PP MS")
+    field(OUT,  "@asyn($(PORT),$(ADDR))ANALOG_OUT_VALUE")
+    #field(EGUL, "$(EGUL)")
+    #field(DRVL, "$(DRVL)")
+    #field(LOPR, "$(LOPR)")
+    #field(EGUF, "$(EGUF)")
+    #field(DRVH, "$(DRVH)")
+    #field(HOPR, "$(HOPR)")
+    #field(PREC, "$(PREC)")
+    #field(LINR, "LINEAR")
+    field(VAL,  "$(VAL)")
+}
