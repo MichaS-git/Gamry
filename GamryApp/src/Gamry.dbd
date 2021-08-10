@@ -4,3 +4,4 @@
 #driver(myDriver)
 #registrar(myRegistrar)
 #variable(myVariable)
+registrar(drvInterface1010eRegister)
