@@ -4,7 +4,7 @@ Interface1010eDriver.obj : C:/epics/base-7.0.3.1/include/epicsExit.h
 Interface1010eDriver.obj : C:/epics/base-7.0.3.1/include/iocsh.h
 Interface1010eDriver.obj : C:/epics/inst-7.0.3.1/asyn-R4-39/include/asynPortDriver.h
 Interface1010eDriver.obj : C:/epics/base-7.0.3.1/include/epicsExport.h
-Interface1010eDriver.obj : GamryCom.tlh
+Interface1010eDriver.obj : ../GamryCom.tlh
 Interface1010eDriver.obj : C:/epics/base-7.0.3.1/include/shareLib.h
 Interface1010eDriver.obj : C:/epics/base-7.0.3.1/include/compilerDependencies.h
 Interface1010eDriver.obj : C:/epics/base-7.0.3.1/include/epicsTypes.h
@@ -13,7 +13,7 @@ Interface1010eDriver.obj : C:/epics/base-7.0.3.1/include/epicsThread.h
 Interface1010eDriver.obj : C:/epics/inst-7.0.3.1/asyn-R4-39/include/asynStandardInterfaces.h
 Interface1010eDriver.obj : C:/epics/inst-7.0.3.1/asyn-R4-39/include/asynParamType.h
 Interface1010eDriver.obj : C:/epics/inst-7.0.3.1/asyn-R4-39/include/paramErrors.h
-Interface1010eDriver.obj : C:\epics\inst-7.0.3.1\Gamry\GamryApp\src\O.windows-x64-static\GamryCom.tli
+Interface1010eDriver.obj : C:\Users\BL\source\repos\GamryTest\GamryTest\Debug\GamryCom.tli
 Interface1010eDriver.obj : C:/epics/base-7.0.3.1/include/compiler/msvc/compilerSpecific.h
 Interface1010eDriver.obj : C:/epics/base-7.0.3.1/include/epicsAssert.h
 Interface1010eDriver.obj : C:/epics/base-7.0.3.1/include/epicsGuard.h

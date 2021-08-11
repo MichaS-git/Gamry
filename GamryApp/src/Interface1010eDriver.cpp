@@ -50,6 +50,7 @@ public:
   /* These are the methods that we override from asynPortDriver */
   virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
   virtual asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
+  virtual asynStatus getBounds(asynUser *pasynUser, epicsInt32 *low, epicsInt32 *high);
   //virtual void report(FILE *fp, int details);
 
 protected:
@@ -64,14 +65,14 @@ private:
   int pstatNum_;
 
   // Instrument Interactions
-  IGamryDeviceList* lpDeviceList = NULL;
-  IGamryPstat* lpPstat = NULL;
+  IGamryDeviceList* lpDeviceList;
+  IGamryPstat* lpPstat;
 
   BSTR Sections[16];
   long instrument_index;
 
   // Data Acquisition
-  IGamryDtaqEis* lpDtaq = NULL;
+  IGamryDtaqEis* lpDtaq;
 
 };
 
@@ -110,7 +111,7 @@ Interface1010e::Interface1010e(const char *portName, int pstatNum)
 
 	if (!lpDeviceList || !lpPstat || !lpDtaq)
 	{
-		std::cout << "Could not find any device, please check the connection!" << std::endl;
+		std::cout << "Could not find any devices, please check the connection!" << std::endl;
 		CleanupAndExit(EXIT_FAILURE, lpDeviceList, lpPstat, lpDtaq);
 	}
 
@@ -131,6 +132,7 @@ Interface1010e::Interface1010e(const char *portName, int pstatNum)
 
 	// take control of the selected device
 	lpPstat->Open();
+
   }
   catch (_com_error& e)
   {
@@ -151,10 +153,92 @@ Interface1010e::Interface1010e(const char *portName, int pstatNum)
 	}
 	CleanupAndExit(EXIT_FAILURE, lpDeviceList, lpPstat, lpDtaq);
   }
+
+  int value;
+  this->readInt32(pasynUserSelf, &value);
+
+}
+
+asynStatus Interface1010e::getBounds(asynUser *pasynUser, epicsInt32 *low, epicsInt32 *high)
+{
+  int function = pasynUser->reason;
+
+  // Both the analog outputs and analog inputs are 16-bit devices
+  if ((function == analogOutValue_) ||
+      (function == analogInValue_)) {
+    *low = 0;
+    *high = 65535;
+    return(asynSuccess);
+  } else {
+    return(asynError);
+  }
+}
+
+asynStatus Interface1010e::writeInt32(asynUser *pasynUser, epicsInt32 value)
+{
+  int addr;
+  int function = pasynUser->reason;
+  int status=0;
+  static const char *functionName = "writeInt32";
+
+  this->getAddress(pasynUser, &addr);
+  setIntegerParam(addr, function, value);
+
+  // Analog output functions
+  if (function == analogOutValue_) {
+    //lpDeviceList->Count();
+	std::cout << "There are " << lpDeviceList->Count() << " Gamry device(s) connected to your system:" << std::endl;
+  }
+
+  callParamCallbacks(addr);
+  if (status == 0) {
+    asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
+             "%s:%s, port %s, wrote %d to address %d\n",
+             driverName, functionName, this->portName, value, addr);
+  } else {
+    asynPrint(pasynUser, ASYN_TRACE_ERROR,
+             "%s:%s, port %s, ERROR writing %d to address %d, status=%d\n",
+             driverName, functionName, this->portName, value, addr, status);
+  }
+  return (status==0) ? asynSuccess : asynError;
+}
+
+asynStatus Interface1010e::readInt32(asynUser *pasynUser, epicsInt32 *value)
+{
+  int addr;
+  int function = pasynUser->reason;
+  int status=0;
+  unsigned short shortVal;
+  int range;
+  static const char *functionName = "readInt32";
+
+  this->getAddress(pasynUser, &addr);
+
+  std::cout << "There are " << lpDeviceList->Count() << " Gamry device(s) connected to your system. Called from Constructor" << std::endl;
+
+  // Analog input function
+  if (function == analogInValue_) {
+    getIntegerParam(addr, analogInRange_, &range);
+    //status = cbAIn(boardNum_, addr, range, &shortVal);
+    //shortVal = lpDeviceList->Count();
+    //setIntegerParam(addr, analogInValue_, lpDeviceList->Count());
+	std::cout << "There are " << lpDeviceList->Count() << " Gamry device(s) connected to your system." << std::endl;
+  }
+
+  // Other functions we call the base class method
+  else {
+     status = asynPortDriver::readInt32(pasynUser, value);
+  }
+
+  callParamCallbacks(addr);
+  return (status==0) ? asynSuccess : asynError;
 }
 
 // disconnect from the device
 void Interface1010e::shutdown (void* arg) {
+  //lpPstat->Open();
+  //std::cout << "Closed the connection, wait a bit..." << std::endl;
+  //epicsThreadSleep(5.0);
   CoUninitialize();
 };
 
@@ -242,64 +326,6 @@ long NumberPrompt()
 	std::cout << num << std::endl;
 
 	return num;
-}
-
-asynStatus Interface1010e::writeInt32(asynUser *pasynUser, epicsInt32 value)
-{
-  int addr;
-  int function = pasynUser->reason;
-  int status=0;
-  static const char *functionName = "writeInt32";
-
-  this->getAddress(pasynUser, &addr);
-  setIntegerParam(addr, function, value);
-
-  // Analog output functions
-  if (function == analogOutValue_) {
-    //lpDeviceList->Count();
-	std::cout << "There are " << lpDeviceList->Count() << " Gamry device(s) connected to your system:" << std::endl;
-  }
-
-  callParamCallbacks(addr);
-  if (status == 0) {
-    asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
-             "%s:%s, port %s, wrote %d to address %d\n",
-             driverName, functionName, this->portName, value, addr);
-  } else {
-    asynPrint(pasynUser, ASYN_TRACE_ERROR,
-             "%s:%s, port %s, ERROR writing %d to address %d, status=%d\n",
-             driverName, functionName, this->portName, value, addr, status);
-  }
-  return (status==0) ? asynSuccess : asynError;
-}
-
-asynStatus Interface1010e::readInt32(asynUser *pasynUser, epicsInt32 *value)
-{
-  int addr;
-  int function = pasynUser->reason;
-  int status=0;
-  unsigned short shortVal;
-  int range;
-  static const char *functionName = "readInt32";
-
-  this->getAddress(pasynUser, &addr);
-
-  // Analog input function
-  if (function == analogInValue_) {
-    //getIntegerParam(addr, analogInRange_, &range);
-    //status = cbAIn(boardNum_, addr, range, &shortVal);
-    //shortVal = lpDeviceList->Count();
-    //setIntegerParam(addr, analogInValue_, lpDeviceList->Count());
-	std::cout << "There are " << lpDeviceList->Count() << " Gamry device(s) connected to your system:" << std::endl;
-  }
-
-  // Other functions we call the base class method
-  else {
-     status = asynPortDriver::readInt32(pasynUser, value);
-  }
-
-  callParamCallbacks(addr);
-  return (status==0) ? asynSuccess : asynError;
 }
 
 /** Configuration command, called directly or from iocsh */
