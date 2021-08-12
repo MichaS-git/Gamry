@@ -27,8 +27,7 @@ static const char *driverName = "Interface1010e";
 #define analogOutValueString      "ANALOG_OUT_VALUE"
 
 // Analog input parameters
-#define analogInValueString       "ANALOG_IN_VALUE"
-#define analogInRangeString       "ANALOG_IN_RANGE"
+#define GMDeviceCountString       "GM_DEVICE_COUNT"
 
 //
 // Helper Functions
@@ -50,7 +49,6 @@ public:
   /* These are the methods that we override from asynPortDriver */
   virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
   virtual asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
-  virtual asynStatus getBounds(asynUser *pasynUser, epicsInt32 *low, epicsInt32 *high);
   //virtual void report(FILE *fp, int details);
 
 protected:
@@ -58,8 +56,7 @@ protected:
   int analogOutValue_;
 
   // Analog input parameters
-  int analogInValue_;
-  int analogInRange_;
+  int GMDeviceCountValue_;
 
 private:
   int pstatNum_;
@@ -83,6 +80,8 @@ Interface1010e::Interface1010e(const char *portName, int pstatNum)
       asynInt32Mask | asynDrvUserMask,  // Interfaces that we implement
       0,                                // Interfaces that do callbacks
       ASYN_MULTIDEVICE | ASYN_CANBLOCK, 1, /* ASYN_CANBLOCK=1, ASYN_MULTIDEVICE=1, autoConnect=1 */
+	  // ASYN_CANBLOCK crashes the IOC !
+	  //ASYN_MULTIDEVICE, 1, /* ASYN_CANBLOCK=1, ASYN_MULTIDEVICE=1, autoConnect=1 */
       0, 0),  /* Default priority and stack size */
     pstatNum_(pstatNum)
 {
@@ -94,8 +93,7 @@ Interface1010e::Interface1010e(const char *portName, int pstatNum)
   createParam(analogOutValueString,            asynParamInt32, &analogOutValue_);
 
   // Analog input parameters
-  createParam(analogInValueString,             asynParamInt32, &analogInValue_);
-  createParam(analogInRangeString,             asynParamInt32, &analogInRange_);
+  createParam(GMDeviceCountString,             asynParamInt32, &GMDeviceCountValue_);
 
   // Initialize our COM instance
   CoInitialize(NULL);
@@ -116,7 +114,7 @@ Interface1010e::Interface1010e(const char *portName, int pstatNum)
 	}
 
 	// Ask the Device List how many devices are available.
-	std::cout << "There are " << lpDeviceList->Count() << " Gamry device(s) connected to your system:" << std::endl;
+	//std::cout << "There are " << lpDeviceList->Count() << " Gamry device(s) connected to your system:" << std::endl;
 
 	// Initialize our pstat object
 	instrument_index = SelectDevice(lpDeviceList, Sections);
@@ -156,22 +154,8 @@ Interface1010e::Interface1010e(const char *portName, int pstatNum)
 
   //int value;
   //this->readInt32(pasynUserSelf, &value);
+  asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "There are %d Gamry device(s) connected to your system\n", lpDeviceList->Count());
 
-}
-
-asynStatus Interface1010e::getBounds(asynUser *pasynUser, epicsInt32 *low, epicsInt32 *high)
-{
-  int function = pasynUser->reason;
-
-  // Both the analog outputs and analog inputs are 16-bit devices
-  if ((function == analogOutValue_) ||
-      (function == analogInValue_)) {
-    *low = 0;
-    *high = 65535;
-    return(asynSuccess);
-  } else {
-    return(asynError);
-  }
 }
 
 asynStatus Interface1010e::writeInt32(asynUser *pasynUser, epicsInt32 value)
@@ -209,19 +193,18 @@ asynStatus Interface1010e::readInt32(asynUser *pasynUser, epicsInt32 *value)
   int function = pasynUser->reason;
   int status=0;
   unsigned short shortVal;
-  int range;
-  static const char *functionName = "readInt32";
+  //static const char *functionName = "readInt32";
 
   this->getAddress(pasynUser, &addr);
+  asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "There are Gamry device(s) connected to your system\n");
   asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "There are %d Gamry device(s) connected to your system\n", lpDeviceList->Count());
 
   // Analog input function
-  if (function == analogInValue_) {
-    getIntegerParam(addr, analogInRange_, &range);
-    //status = cbAIn(boardNum_, addr, range, &shortVal);
-    //shortVal = lpDeviceList->Count();
-    //setIntegerParam(addr, analogInValue_, lpDeviceList->Count());
-	std::cout << "There are " << lpDeviceList->Count() << " Gamry device(s) connected to your system." << std::endl;
+  if (function == GMDeviceCountValue_) {
+    //status = lpDeviceList->Count();
+    shortVal = lpDeviceList->Count();
+	*value = shortVal;
+    setIntegerParam(addr, GMDeviceCountValue_, shortVal);
   }
 
   // Other functions we call the base class method
