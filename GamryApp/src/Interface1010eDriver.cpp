@@ -154,8 +154,8 @@ Interface1010e::Interface1010e(const char *portName, int pstatNum)
 	CleanupAndExit(EXIT_FAILURE, lpDeviceList, lpPstat, lpDtaq);
   }
 
-  int value;
-  this->readInt32(pasynUserSelf, &value);
+  //int value;
+  //this->readInt32(pasynUserSelf, &value);
 
 }
 
@@ -213,8 +213,7 @@ asynStatus Interface1010e::readInt32(asynUser *pasynUser, epicsInt32 *value)
   static const char *functionName = "readInt32";
 
   this->getAddress(pasynUser, &addr);
-
-  std::cout << "There are " << lpDeviceList->Count() << " Gamry device(s) connected to your system. Called from Constructor" << std::endl;
+  asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "There are %d Gamry device(s) connected to your system\n", lpDeviceList->Count());
 
   // Analog input function
   if (function == analogInValue_) {

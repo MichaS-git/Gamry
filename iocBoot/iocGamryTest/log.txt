@@ -1,0 +1,36 @@
+#!../../bin/windows-x64-static/GamryTest
+< envPaths
+epicsEnvSet("IOC","iocGamryTest")
+epicsEnvSet("TOP","C:/epics/IOC/GamryTest")
+epicsEnvSet("SUPPORT","C:/epics/inst-7.0.3.1")
+epicsEnvSet("ASYN","C:/epics/inst-7.0.3.1/asyn-R4-39")
+epicsEnvSet("GAMRY","C:/epics/inst-7.0.3.1/Gamry")
+epicsEnvSet("EPICS_BASE","C:/epics/base-7.0.3.1")
+## Register all support components
+dbLoadDatabase "../../dbd/GamryTest.dbd"
+GamryTest_registerRecordDeviceDriver pdbbase
+## Load record instances
+dbLoadTemplate("Gamry.substitutions")
+## Configure port driver
+# Interface1010eConfig(portName,        # The name to give to this asyn port driver
+#                      pstatNum)        # The number of this potentiostat
+Interface1010eConfig("Gamry_1", 1)
+Loading Gamry devices...
+There are 1 Gamry device(s) connected to your system:
+0. IFC1010-29186
+ Device 0 automatically selected.
+
+Selected device: 
+Section:  IFC1010-29186
+Label:    IFC1010-29186
+Serial:   29186
+
+#asynSetTraceMask Gamry_1 -1 255
+iocInit
+############################################################################
+## EPICS R7.0.3.1
+## EPICS Base built Feb 28 2020
+############################################################################
+## Start any sequence programs
+#seq sncxxx,"user=Administrator"
+epics> 
