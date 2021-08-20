@@ -1,6 +1,0 @@
-record(ao,"$(P)$(R)") {
-    field(PINI, "NO")
-    field(DTYP, "asynInt32")
-    field(OUT,  "@asyn($(PORT),$(ADDR))ANALOG_OUT_VALUE")
-    field(VAL,  "$(VAL)")
-}
