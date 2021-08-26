@@ -1,14 +1,6 @@
-# Analog outputs
-file "$(GAMRY)/GamryApp/Db/analogOut.template"
+file "$(GAMRY)/GamryApp/Db/Interface1010E.template"
 {
 pattern
-{    P,       R,   VAL,   PORT,   ADDR}
-{   Gamry:,  out,   0,  Gamry_1,    0}
-}
-# Analog inputs
-file "$(GAMRY)/GamryApp/Db/analogIn.template"
-{
-pattern
-{    P,       R,   PORT,      SCAN,     ADDR}
-{   Gamry:,  in,   Gamry_1, "Passive",    0}
+{    P,        PORT,       ADDR}
+{   Gamry,   Gamry_1,     0}
 }

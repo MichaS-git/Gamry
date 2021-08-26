@@ -17,8 +17,9 @@ dbLoadTemplate("Gamry.substitutions")
 #                      pstatNum)        # The number of this potentiostat
 Interface1010eConfig("Gamry_1", 1)
 
-asynSetTraceMask Gamry_1 -1 255
-asynSetTraceInfoMask((Gamry_1, 0, TIME|THREAD)
+#asynSetTraceMask Gamry_1 -1 255
+# show thread-number for debugging
+#asynSetTraceInfoMask((Gamry_1, 0, TIME|THREAD)
 
 iocInit
 
