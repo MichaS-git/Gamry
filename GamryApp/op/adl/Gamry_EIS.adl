@@ -1,14 +1,14 @@
 
 file {
-	name="C:\epics\inst-7.0.3.1\Gamry\GamryApp\op\adl\Gamry_EIS.adl"
+	name="C:\epics\inst-7.0.6\Gamry\GamryApp\op\adl\Gamry_EIS.adl"
 	version=030109
 }
 display {
 	object {
-		x=1073
-		y=57
+		x=2438
+		y=121
 		width=350
-		height=340
+		height=690
 	}
 	clr=14
 	bclr=4
@@ -97,7 +97,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="Frequency"
+	textix="Initial Freq. (Hz)"
 	align="horiz. right"
 }
 "text entry" {
@@ -108,7 +108,7 @@ text {
 		height=20
 	}
 	control {
-		chan="$(P):z_freq"
+		chan="$(P):EisFreqInit"
 		clr=14
 		bclr=51
 	}
@@ -126,7 +126,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="Cycles Delay"
+	textix="AC Voltage (mV rms)"
 	align="horiz. right"
 }
 text {
@@ -139,7 +139,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="Precision"
+	textix="Points/decade"
 	align="horiz. right"
 }
 "text entry" {
@@ -150,7 +150,7 @@ text {
 		height=20
 	}
 	control {
-		chan="$(P):precision"
+		chan="$(P):EisPointDensity"
 		clr=14
 		bclr=51
 	}
@@ -166,7 +166,7 @@ text {
 		height=20
 	}
 	control {
-		chan="$(P):cycles_delay"
+		chan="$(P):EisAcAmpl"
 		clr=14
 		bclr=51
 	}
@@ -184,7 +184,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="Amplitude"
+	textix="Final Freq. (Hz)"
 	align="horiz. right"
 }
 "text entry" {
@@ -195,59 +195,13 @@ text {
 		height=20
 	}
 	control {
-		chan="$(P):amplitude"
+		chan="$(P):EisFreqFinal"
 		clr=14
 		bclr=51
 	}
 	format="compact"
 	limits {
 	}
-}
-"message button" {
-	object {
-		x=251
-		y=286
-		width=60
-		height=20
-	}
-	control {
-		chan="$(P)$(R)Run"
-		clr=14
-		bclr=20
-	}
-	label="Stop"
-	press_msg="0"
-}
-"message button" {
-	object {
-		x=166
-		y=286
-		width=60
-		height=20
-	}
-	control {
-		chan="$(P)$(R)Run"
-		clr=14
-		bclr=15
-	}
-	label="Start"
-	press_msg="1"
-}
-text {
-	object {
-		x=197
-		y=259
-		width=90
-		height=20
-	}
-	"basic attribute" {
-		clr=60
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)$(R)Run"
-	}
-	textix="Done"
 }
 rectangle {
 	object {
@@ -275,17 +229,366 @@ text {
 }
 text {
 	object {
-		x=197
-		y=259
-		width=90
+		x=58
+		y=132
+		width=100
 		height=20
 	}
 	"basic attribute" {
-		clr=30
+		clr=14
 	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)$(R)Run"
+	textix="DC Voltage (V)"
+	align="horiz. right"
+}
+"text entry" {
+	object {
+		x=166
+		y=132
+		width=60
+		height=20
 	}
-	textix="Running"
+	control {
+		chan="$(P):EisDcAmpl"
+		clr=14
+		bclr=51
+	}
+	format="compact"
+	limits {
+	}
+}
+text {
+	object {
+		x=58
+		y=157
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Area (cm2)"
+	align="horiz. right"
+}
+text {
+	object {
+		x=58
+		y=182
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Estimated Z (ohms)"
+	align="horiz. right"
+}
+"text entry" {
+	object {
+		x=166
+		y=157
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P):EisArea"
+		clr=14
+		bclr=51
+	}
+	format="compact"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=166
+		y=182
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P):EisZGuess"
+		clr=14
+		bclr=51
+	}
+	format="compact"
+	limits {
+	}
+}
+text {
+	object {
+		x=57
+		y=207
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Optimize for:"
+	align="horiz. right"
+}
+menu {
+	object {
+		x=166
+		y=207
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P):EisSpeed"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=57
+		y=257
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Zfreq (Hz):"
+	align="horiz. right"
+}
+"text update" {
+	object {
+		x=166
+		y=257
+		width=120
+		height=18
+	}
+	monitor {
+		chan="$(P):EisZFreq"
+		clr=54
+		bclr=4
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=57
+		y=282
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Zreal (Ohm):"
+	align="horiz. right"
+}
+"text update" {
+	object {
+		x=166
+		y=282
+		width=120
+		height=18
+	}
+	monitor {
+		chan="$(P):EisZReal"
+		clr=54
+		bclr=4
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=57
+		y=307
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Zimag (Ohm):"
+	align="horiz. right"
+}
+"text update" {
+	object {
+		x=166
+		y=307
+		width=120
+		height=18
+	}
+	monitor {
+		chan="$(P):EisZImag"
+		clr=54
+		bclr=4
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=57
+		y=332
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Zsig (V):"
+	align="horiz. right"
+}
+"text update" {
+	object {
+		x=166
+		y=332
+		width=120
+		height=18
+	}
+	monitor {
+		chan="$(P):EisZSig"
+		clr=54
+		bclr=4
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=57
+		y=357
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Zmod (Ohm):"
+	align="horiz. right"
+}
+"text update" {
+	object {
+		x=166
+		y=357
+		width=120
+		height=18
+	}
+	monitor {
+		chan="$(P):EisZMod"
+		clr=54
+		bclr=4
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=57
+		y=382
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Zphz (deg):"
+	align="horiz. right"
+}
+"text update" {
+	object {
+		x=166
+		y=382
+		width=120
+		height=18
+	}
+	monitor {
+		chan="$(P):EisZPhz"
+		clr=54
+		bclr=4
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=57
+		y=407
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Idc (A):"
+	align="horiz. right"
+}
+"text update" {
+	object {
+		x=166
+		y=407
+		width=120
+		height=18
+	}
+	monitor {
+		chan="$(P):EisIdc"
+		clr=54
+		bclr=4
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=57
+		y=432
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Vdc (V):"
+	align="horiz. right"
+}
+"text update" {
+	object {
+		x=166
+		y=432
+		width=120
+		height=18
+	}
+	monitor {
+		chan="$(P):EisVdc"
+		clr=54
+		bclr=4
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=57
+		y=457
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="IERange:"
+	align="horiz. right"
+}
+"text update" {
+	object {
+		x=166
+		y=457
+		width=120
+		height=18
+	}
+	monitor {
+		chan="$(P):EisIERange"
+		clr=54
+		bclr=4
+	}
+	limits {
+	}
 }

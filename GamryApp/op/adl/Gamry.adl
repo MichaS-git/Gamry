@@ -1,14 +1,14 @@
 
 file {
-	name="C:\epics\inst-7.0.3.1\Gamry\GamryApp\op\adl\Gamry.adl"
+	name="C:\epics\inst-7.0.6\Gamry\GamryApp\op\adl\Gamry.adl"
 	version=030109
 }
 display {
 	object {
-		x=34
-		y=38
+		x=2189
+		y=205
 		width=1070
-		height=350
+		height=700
 	}
 	clr=14
 	bclr=4
@@ -105,17 +105,27 @@ composite {
 		x=5
 		y=35
 		width=350
-		height=299
+		height=300
 	}
 	"composite name"=""
 	"composite file"="Gamry_Setup.adl"
 }
 composite {
 	object {
+		x=360
+		y=35
+		width=350
+		height=120
+	}
+	"composite name"=""
+	"composite file"="Gamry_DC.adl"
+}
+composite {
+	object {
 		x=715
 		y=35
 		width=350
-		height=299
+		height=270
 	}
 	"composite name"=""
 	"composite file"="Gamry_EIS.adl"

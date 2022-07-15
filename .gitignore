@@ -5,14 +5,15 @@ O.*
 bin/
 db/
 dbd/
-_docs/
 html/
 include/
 lib/
 templates/
 cdCommands
-envPaths*
+envPaths
 dllPath.bat
 auto_settings.sav*
 auto_positions.sav*
+.ccfxprepdir/
+*.local
 GamryCom.tlh
